@@ -5,6 +5,7 @@
 
 #include <pthread.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "listed_blocking_queue.h"
 
@@ -69,8 +70,7 @@ queue_node_t* remove_task(listed_queue_t* queue)
 	queue->head = node->next;
 	if (node->next == NULL)
 	{/*only a node*/
-		if(queue->node_num == 0);
-			return NULL;
+		assert(queue->node_num == 0);
 		queue->tail = NULL;
 	}
 	else

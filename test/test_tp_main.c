@@ -34,7 +34,6 @@ int main(int argc, char **argv)
 	while(threadpool_add_task(pool, &dummy_task, NULL, ADD_NOBLOCKING) == 0) {
 		pthread_mutex_lock(&lock);
 		tasks++;
-		fprintf(stderr, "Added %d tasks\n", tasks);
 		pthread_mutex_unlock(&lock);
 	}   
 

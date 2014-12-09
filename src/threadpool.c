@@ -134,7 +134,10 @@ static void* thread_func(void *arg)
 		/*get task from task queue*/
 		task_node = remove_task(pool->task_queue);
 		if(task_node == NULL)
+		{
+			pthread_mutex_unlock(&(pool->lock));
 			continue;
+		}
 
 		task_object = task_node->task_info;
 		pool->task_num = pool->task_num - 1;
@@ -158,7 +161,6 @@ int threadpool_add_task(threadpool* pool, task_routine routine, void* arg, add_t
 		((flag != ADD_BLOCKING) && (flag != ADD_NOBLOCKING)))
 		return ADD_TASK_FAILURE;
 
-	fprintf(stderr, "0");
 	pthread_mutex_lock(&(pool->lock));
 
 	/*if the call is no blocking add task and the task queue is full, then return immediately*/
@@ -168,7 +170,6 @@ int threadpool_add_task(threadpool* pool, task_routine routine, void* arg, add_t
 		return ADD_TASK_FAILURE;
 	}
 
-	fprintf(stderr, "1");
 	pool->wait_tnum_on_add_task = pool->wait_tnum_on_add_task + 1;
 	while((pool->task_num >= pool->max_task_num) && (pool->destory_flag == NODESTORYING))
 	{
@@ -180,7 +181,6 @@ int threadpool_add_task(threadpool* pool, task_routine routine, void* arg, add_t
 	}
 	pool->wait_tnum_on_add_task = pool->wait_tnum_on_add_task - 1;
 
-	fprintf(stderr, "2");
 	if(pool->destory_flag != NODESTORYING)
 	{
 		pool->wait_tnum_on_add_task = 0;
@@ -188,19 +188,16 @@ int threadpool_add_task(threadpool* pool, task_routine routine, void* arg, add_t
 		pthread_mutex_unlock(&(pool->lock));
 		return ADD_TASK_FAILURE;
 	}
-	fprintf(stderr, "3");
 	queue_node_t *node = (queue_node_t*)malloc(sizeof(queue_node_t));
 	if(node == NULL)
 		return ADD_TASK_FAILURE;
 	(node->task_info).routine = routine;
 	(node->task_info).arg = arg;
 	append_task(pool->task_queue, node);
-	fprintf(stderr, "4");
 	
 	pool->task_num = pool->task_num + 1;
 	pthread_cond_signal(&pool->del_task_cond);
 	pthread_mutex_unlock(&pool->lock);
-	fprintf(stderr, "5");
 
 	return 0;
 }
