@@ -41,6 +41,7 @@ threadpool* threadpool_init(unsigned int thread_num,unsigned int max_task_num)
 	/* Initialize */
 	pool->thread_num = 0;
 	pool->destory_flag = NODESTORYING;
+	pool->wait_tnum_on_add_task = 0;
 
 	pool->task_num = 0;
 	pool->max_task_num = max_task_num;
@@ -176,6 +177,8 @@ int threadpool_add_task(threadpool* pool, task_routine routine, void* arg, add_t
 		if(pthread_cond_wait(&(pool->add_task_cond), &(pool->lock)) != 0)
 		{
 			pool->wait_tnum_on_add_task = pool->wait_tnum_on_add_task - 1;
+			pthread_cond_signal(&pool->wait_thread_cond);
+			pthread_mutex_unlock(&(pool->lock));
 			return ADD_TASK_FAILURE;
 		}
 	}
@@ -190,7 +193,10 @@ int threadpool_add_task(threadpool* pool, task_routine routine, void* arg, add_t
 	}
 	queue_node_t *node = (queue_node_t*)malloc(sizeof(queue_node_t));
 	if(node == NULL)
+	{
+		pthread_mutex_unlock(&(pool->lock));
 		return ADD_TASK_FAILURE;
+	}
 	(node->task_info).routine = routine;
 	(node->task_info).arg = arg;
 	append_task(pool->task_queue, node);
