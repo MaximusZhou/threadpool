@@ -10,20 +10,20 @@ typedef struct threadpool threadpool;
 
 /* define threadpool error type */
 typedef enum {
-	ADD_TASK_FAILURE = 1,
+	ADD_TASK_FAILURE = 1
 } threadpool_error_t;
 
 /* define add routine way */
 typedef enum {
 	ADD_NOBLOCKING,
-	ADD_BLOCKING,
+	ADD_BLOCKING
 } add_task_t;
 
 /* Is threadpool destorying? */
 typedef enum {
 	NODESTORYING,
 	DESTORY_NOBLOCKING,
-	DESTORY_BLOCKING,
+	DESTORY_BLOCKING
 } destory_flag_t;
 
 /* define task routine type */

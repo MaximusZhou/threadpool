@@ -158,6 +158,8 @@ static void* thread_func(void *arg)
 
 int threadpool_add_task(threadpool* pool, task_routine routine, void* arg, add_task_t flag)
 {
+	queue_node_t *node = NULL;
+
 	if((pool == NULL) || (routine == NULL) || 
 		((flag != ADD_BLOCKING) && (flag != ADD_NOBLOCKING)))
 		return ADD_TASK_FAILURE;
@@ -191,7 +193,7 @@ int threadpool_add_task(threadpool* pool, task_routine routine, void* arg, add_t
 		pthread_mutex_unlock(&(pool->lock));
 		return ADD_TASK_FAILURE;
 	}
-	queue_node_t *node = (queue_node_t*)malloc(sizeof(queue_node_t));
+	node = (queue_node_t*)malloc(sizeof(queue_node_t));
 	if(node == NULL)
 	{
 		pthread_mutex_unlock(&(pool->lock));

@@ -1,7 +1,6 @@
 /*
 * test_tp_main.c
  * Author:MaximusZhou
-* $gcc -g  -lpthread -I src/ -o test/test_tp_main  src/listed_blocking_queue.c src/threadpool.c test/test_tp_main.c
 * $for((i=1;i<=10000;i++));do test/test_tp_main;done
 */
 #define THREAD 5

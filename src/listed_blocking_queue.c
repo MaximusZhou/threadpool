@@ -55,6 +55,8 @@ void append_task(listed_queue_t* queue, queue_node_t* node)
 
 queue_node_t* remove_task(listed_queue_t* queue)
 {
+	queue_node_t* node; 
+
 	if (queue == NULL)
 		return NULL;
 
@@ -66,7 +68,7 @@ queue_node_t* remove_task(listed_queue_t* queue)
 	}
 	queue->node_num = queue->node_num - 1;
 
-	queue_node_t* node = queue->head;
+	node = queue->head;
 	queue->head = node->next;
 	if (node->next == NULL)
 	{/*only a node*/
@@ -77,7 +79,6 @@ queue_node_t* remove_task(listed_queue_t* queue)
 	{
 		node->next->prev = NULL;
 	}
-	node->next == NULL;
 	pthread_mutex_unlock(&queue->q_lock);
 
 	return node;
